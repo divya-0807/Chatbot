@@ -28,24 +28,24 @@ const ChatContainer = ({ chatId, onMessageSent }) => {
 const handleSend = async () => {
   if (!input.trim()) return;
 
-  setPendingQuestion(input);
-  setLoading(true);
   const cleanText = input.trim();
-
+  setPendingQuestion(cleanText);
   setInput('');
+  setLoading(true);
 
   try {
     await sendMessage(chatId, cleanText);
     await loadChat();
     if (onMessageSent) onMessageSent();
   } catch (err) {
-    alert('Failed to send message');
+    toast.error('Failed to send message');
     console.error(err);
   } finally {
     setLoading(false);
     setPendingQuestion('');
   }
 };
+
 
 
   useEffect(() => {
