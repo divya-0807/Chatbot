@@ -40,7 +40,13 @@ exports.login = async(req,res) => {
         }
 
         const token = jwt.sign({userId: user._id},process.env.JWT_SECRET,{ expiresIn: '7d' });
-        res.cookie('jwt',token,{httpOnly:true});
+        res.cookie('jwt', token, {
+  httpOnly: true,
+  secure: true,         // ✅ Required for HTTPS (Render uses HTTPS)
+  sameSite: 'None',     // ✅ Required for cross-origin cookies
+  maxAge: 7 * 24 * 60 * 60 * 1000, // Optional: 7 days
+});
+
         res.json({message: 'Login Successful'});
         
     } catch (error) {
