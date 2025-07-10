@@ -1,8 +1,9 @@
 // src/api/chat.js
 import axios from 'axios';
+const base = import.meta.env.VITE_BACKEND_URL.replace(/\/$/, ''); // remove trailing slash
 
 const ChatAPI = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL+'/chat',
+  baseURL: base+'/chat',
   withCredentials: true,
 });
 
