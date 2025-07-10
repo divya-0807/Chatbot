@@ -25,34 +25,28 @@ const ChatContainer = ({ chatId, onMessageSent }) => {
     if (chatId) loadChat();
   }, [chatId]);
 
-  const handleSend = async () => {
-    if (!input.trim() && !image) {
-      toast.error("Please enter a message or attach an image.");
-      return;
-    }
+const handleSend = async () => {
+  if (!input.trim()) return;
 
-    setPendingQuestion(input || '[Image]');
-    setLoading(true);
+  setPendingQuestion(input);
+  setLoading(true);
+  const cleanText = input.trim();
 
-    const formData = new FormData();
-    formData.append('question', input); // ✅ FIXED
-    if (image) formData.append('image', image);
+  setInput('');
 
-    setInput('');
-    setImage(null);
+  try {
+    await sendMessage(chatId, cleanText);
+    await loadChat();
+    if (onMessageSent) onMessageSent();
+  } catch (err) {
+    alert('Failed to send message');
+    console.error(err);
+  } finally {
+    setLoading(false);
+    setPendingQuestion('');
+  }
+};
 
-    try {
-      await sendMessage(chatId, formData);
-      await loadChat();
-      if (onMessageSent) onMessageSent();
-    } catch (err) {
-      console.error("❌ Failed to send message", err);
-      toast.error("Message sending failed");
-    } finally {
-      setLoading(false);
-      setPendingQuestion('');
-    }
-  };
 
   useEffect(() => {
     if (bottomRef.current) {
