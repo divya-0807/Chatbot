@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const base = import.meta.env.VITE_BACKEND_URL.replace(/\/$/, ''); // remove trailing slash
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL+'/auth',
+  baseURL: base + '/auth',
   withCredentials: true,
 });
 
