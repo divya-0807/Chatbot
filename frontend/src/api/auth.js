@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:3888/auth',
+  baseURL: import.meta.env.VITE_BACKEND_URL+'/auth',
   withCredentials: true,
 });
 
@@ -11,7 +11,7 @@ export const forgotPassword = (data) => API.post('/forgot-password', data);
 export const resetPassword = (data) => API.post('/reset-password', data);
 
 export const logoutUser = () =>
-  axios.post('http://localhost:3888/auth/logout', {}, { withCredentials: true });
+  axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {}, { withCredentials: true });
 
 
 export const checkAuth = () => API.get('/check-auth', { withCredentials: true });
