@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getChat, sendMessage } from '../api/chat';
 import { FiImage } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 
 const ChatContainer = ({ chatId, onMessageSent }) => {
   const [chat, setChat] = useState(null);
@@ -15,7 +16,8 @@ const ChatContainer = ({ chatId, onMessageSent }) => {
       const res = await getChat(chatId);
       setChat(res.data.chat);
     } catch (err) {
-      console.error("Failed to load chat", err);
+      console.error("❌ Failed to load chat", err);
+      toast.error("Failed to load chat");
     }
   };
 
@@ -24,12 +26,16 @@ const ChatContainer = ({ chatId, onMessageSent }) => {
   }, [chatId]);
 
   const handleSend = async () => {
-    if (!input.trim() && !image) return;
+    if (!input.trim() && !image) {
+      toast.error("Please enter a message or attach an image.");
+      return;
+    }
 
     setPendingQuestion(input || '[Image]');
     setLoading(true);
+
     const formData = new FormData();
-    formData.append('message', input);
+    formData.append('question', input); // ✅ FIXED
     if (image) formData.append('image', image);
 
     setInput('');
@@ -40,7 +46,8 @@ const ChatContainer = ({ chatId, onMessageSent }) => {
       await loadChat();
       if (onMessageSent) onMessageSent();
     } catch (err) {
-      alert('Failed to send message');
+      console.error("❌ Failed to send message", err);
+      toast.error("Message sending failed");
     } finally {
       setLoading(false);
       setPendingQuestion('');
@@ -53,7 +60,9 @@ const ChatContainer = ({ chatId, onMessageSent }) => {
     }
   }, [chat, loading]);
 
-  if (!chat) return <div className="p-6 text-gray-400">Select a chat to begin</div>;
+  if (!chat) {
+    return <div className="p-6 text-gray-400">Select a chat to begin</div>;
+  }
 
   return (
     <div className="flex flex-col h-full bg-gray-900 text-white p-4">
@@ -64,9 +73,13 @@ const ChatContainer = ({ chatId, onMessageSent }) => {
             {/* User message */}
             <div className="flex justify-end">
               <div className="bg-amber-600 px-4 py-2 rounded-xl max-w-[70%] text-white">
-                <strong>You:</strong> {msg.message}
+                <strong>You:</strong> {msg.question}
                 {msg.imageUrl && (
-                  <img src={msg.imageUrl} alt="sent" className="mt-2 rounded max-w-full" />
+                  <img
+                    src={msg.imageUrl}
+                    alt="sent"
+                    className="mt-2 rounded max-w-full"
+                  />
                 )}
               </div>
             </div>
@@ -80,7 +93,7 @@ const ChatContainer = ({ chatId, onMessageSent }) => {
           </div>
         ))}
 
-        {/* Typing... */}
+        {/* Typing effect */}
         {loading && pendingQuestion && (
           <div className="space-y-2">
             <div className="flex justify-end">
