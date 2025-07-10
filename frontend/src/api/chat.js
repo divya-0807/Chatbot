@@ -10,5 +10,9 @@ const ChatAPI = axios.create({
 export const getAllChats = () => ChatAPI.get('/all');
 export const createChat = () => ChatAPI.post('/new');
 export const getChat = (id) => ChatAPI.get(`/${id}`);
-export const sendMessage = (id, message) => ChatAPI.post(`/${id}`, { question: message });
+export const sendMessage = (id, message) => {
+  const cleanMessage = typeof message === 'string' ? message.trim() : '';
+  return ChatAPI.post(`/${id}`, { question: cleanMessage });
+};
+
 export const deleteChat = (id) => ChatAPI.delete(`/${id}`);
